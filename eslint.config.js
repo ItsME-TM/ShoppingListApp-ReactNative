@@ -1,19 +1,26 @@
-// https://docs.expo.dev/guides/using-eslint/
-const { defineConfig } = require('eslint/config');
-const expoConfig = require("eslint-config-expo/flat");
-const prettierPlugin = require("eslint-plugin-prettier");
-const prettierRecommended = require("eslint-plugin-prettier/recommended");
+const { FlatCompat } = require("@eslint/eslintrc");
+const compat = new FlatCompat();
 
-module.exports = defineConfig([
-  expoConfig,
+const prettierPlugin = require("eslint-plugin-prettier");
+const reactNativePlugin = require("eslint-plugin-react-native");
+
+module.exports = [
+  ...compat.extends("expo"),
+  ...compat.extends("prettier"),
   {
-    ignores: ["dist/*"],
     plugins: {
-      prettier: prettierPlugin
+      prettier: prettierPlugin,
+      "react-native": reactNativePlugin,
     },
-    ...prettierRecommended,
     rules: {
-      "prettier/prettier": "warn"
-    }
-  }
-]);
+      "prettier/prettier": "error",
+      "react-native/no-unused-styles": "error",
+    },
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: "module",
+      },
+    },
+  },
+];

@@ -5,7 +5,10 @@ export default function Layout() {
     <Stack>
       <Stack.Screen name="index" options={{ title: "Shopping List" }} />
       <Stack.Screen name="idea" options={{ title: "Idea" }} />
-      <Stack.Screen name="counter" options={{ title: "Counter" }} />
+      <Stack.Screen
+        name="counter"
+        options={{ title: "Counter", presentation: "modal", animation: "fade" }}
+      />
     </Stack>
   );
 }

@@ -1,11 +1,12 @@
 import { Alert, View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { theam } from "../theam";
+import { theme } from "../theme";
 
 type Props = {
   name: string;
+  isCompleted?: boolean;
 };
 
-export function ShoppingListItems({ name }: Props) {
+export function ShoppingListItems({ name, isCompleted }: Props) {
   const handleDelete = () => {
     Alert.alert(`Wanna delete ${name}?`, "Sure you want to delete this item?", [
       {
@@ -22,49 +23,73 @@ export function ShoppingListItems({ name }: Props) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iteamContainer}>
-        <Text style={styles.iteamText}>{name}</Text>
-        <TouchableOpacity onPress={handleDelete} style={styles.button}>
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
-      </View>
+    <View
+      style={[
+        styles.iteamContainer,
+        isCompleted ? styles.completedContainer : undefined,
+      ]}
+    >
+      <Text
+        style={[
+          styles.iteamText,
+          isCompleted ? styles.completedText : undefined,
+        ]}
+      >
+        {name}
+      </Text>
+      <TouchableOpacity
+        onPress={handleDelete}
+        style={[
+          styles.button,
+          isCompleted ? styles.completedButtton : undefined,
+        ]}
+      >
+        <Text style={styles.buttonText}>Delete</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-  },
-
   iteamText: {
     fontSize: 18,
     color: "#1a759f",
     fontWeight: "bold",
   },
 
+  completedText: {
+    color: theme.colorGrey,
+    textDecorationLine: "line-through",
+  },
+
+  completedContainer: {
+    backgroundColor: theme.colorLightGrey,
+    borderBottomColor: theme.colorGrey,
+  },
+
   iteamContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: "#1a759f",
+    borderBottomColor: theme.colorCerulean,
     paddingHorizontal: 8,
-    paddingVertical: 36,
+    paddingVertical: 6,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
 
   button: {
-    backgroundColor: theam.colorBlack,
+    backgroundColor: theme.colorBlack,
     padding: 10,
     borderRadius: 5,
-    color: theam.colorWhite,
+    color: theme.colorWhite,
+  },
+
+  completedButtton: {
+    backgroundColor: theme.colorGrey,
   },
 
   buttonText: {
-    color: theam.colorWhite,
+    color: theme.colorWhite,
     fontSize: 16,
     fontWeight: "bold",
     borderRadius: 6,

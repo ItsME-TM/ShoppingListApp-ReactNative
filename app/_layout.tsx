@@ -28,6 +28,7 @@ export default function Layout() {
         name="counter"
         options={{
           title: "Counter",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Feather name="plus" size={size} color={color} />
           ),

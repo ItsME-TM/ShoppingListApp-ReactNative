@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, ScrollView, FlatList } from "react-native";
+import { StyleSheet, TextInput, FlatList } from "react-native";
 import { ShoppingListItems } from "../components/ShoppingListItems";
 import { theme } from "../theme";
 import { useState } from "react";
@@ -34,23 +34,25 @@ export default function App() {
   };
 
   return (
-    <ScrollView
+    <FlatList
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       stickyHeaderIndices={[0]}
-    >
-      <TextInput
-        placeholder="Add a new item..."
-        style={styles.textInput}
-        value={value}
-        onChangeText={setValue}
-        returnKeyType="done"
-        onSubmitEditing={handleSubmit}
-      />
-      {shoppingList.map((item) => (
-        <ShoppingListItems name={item.name} key={item.id} />
-      ))}
-    </ScrollView>
+      data={shoppingList}
+      ListHeaderComponent={() => (
+        <TextInput
+          placeholder="Add a new item..."
+          style={styles.textInput}
+          value={value}
+          onChangeText={setValue}
+          returnKeyType="done"
+          onSubmitEditing={handleSubmit}
+        />
+      )}
+      renderItem={({ item }) => {
+        return <ShoppingListItems name={item.name} />;
+      }}
+    />
   );
 }
 

@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, FlatList } from "react-native";
+import { StyleSheet, TextInput, FlatList, View, Text } from "react-native";
 import { ShoppingListItems } from "../components/ShoppingListItems";
 import { theme } from "../theme";
 import { useState } from "react";
@@ -15,8 +15,7 @@ const initialList: ShoppingListItemsType[] = [
 ];
 
 export default function App() {
-  const [shoppingList, setShoppingList] =
-    useState<ShoppingListItemsType[]>(initialList);
+  const [shoppingList, setShoppingList] = useState<ShoppingListItemsType[]>([]);
   const [value, setValue] = useState("");
 
   const handleSubmit = () => {
@@ -38,8 +37,13 @@ export default function App() {
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       stickyHeaderIndices={[0]}
+      ListEmptyComponent={
+        <View style={styles.listEmptyContainer}>
+          <Text>Shopping list is empty</Text>
+        </View>
+      }
       data={shoppingList}
-      ListHeaderComponent={() => (
+      ListHeaderComponent={
         <TextInput
           placeholder="Add a new item..."
           style={styles.textInput}
@@ -48,7 +52,7 @@ export default function App() {
           returnKeyType="done"
           onSubmitEditing={handleSubmit}
         />
-      )}
+      }
       renderItem={({ item }) => {
         return <ShoppingListItems name={item.name} />;
       }}
@@ -73,5 +77,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     borderRadius: 50,
     backgroundColor: theme.colorWhite,
+  },
+  listEmptyContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 18,
   },
 });

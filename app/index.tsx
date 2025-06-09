@@ -32,6 +32,12 @@ export default function App() {
     }
   };
 
+  const handleDelete = (id: string) => {
+    const newShoppingList = shoppingList.filter((item) => item.id !== id);
+    setShoppingList(newShoppingList);
+    console.log("Deleted item with id:", id);
+  };
+
   return (
     <FlatList
       style={styles.container}
@@ -54,7 +60,12 @@ export default function App() {
         />
       }
       renderItem={({ item }) => {
-        return <ShoppingListItems name={item.name} />;
+        return (
+          <ShoppingListItems
+            name={item.name}
+            onDelete={() => handleDelete(item.id)}
+          />
+        );
       }}
     />
   );

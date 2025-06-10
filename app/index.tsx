@@ -6,13 +6,8 @@ import { useState } from "react";
 type ShoppingListItemsType = {
   id: string;
   name: string;
+  completedAtTimestamp?: number;
 };
-
-const initialList: ShoppingListItemsType[] = [
-  { id: "1", name: "coffee" },
-  { id: "2", name: "tea" },
-  { id: "3", name: "Orange Juice" },
-];
 
 export default function App() {
   const [shoppingList, setShoppingList] = useState<ShoppingListItemsType[]>([]);
@@ -36,6 +31,21 @@ export default function App() {
     const newShoppingList = shoppingList.filter((item) => item.id !== id);
     setShoppingList(newShoppingList);
     console.log("Deleted item with id:", id);
+  };
+
+  const handleToggleComplete = (id: string) => {
+    const newShoppingList = shoppingList.map((item) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          completedAtTimestamp: item.completedAtTimestamp
+            ? undefined
+            : Date.now(),
+        };
+      }
+      return item;
+    });
+    setShoppingList(newShoppingList);
   };
 
   return (
@@ -64,6 +74,8 @@ export default function App() {
           <ShoppingListItems
             name={item.name}
             onDelete={() => handleDelete(item.id)}
+            onToggleComplete={() => handleToggleComplete(item.id)}
+            isCompleted={Boolean(item.completedAtTimestamp)}
           />
         );
       }}

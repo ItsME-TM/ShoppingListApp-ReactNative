@@ -1,17 +1,31 @@
 import { StyleSheet, TextInput, FlatList, View, Text } from "react-native";
 import { ShoppingListItems } from "../components/ShoppingListItems";
 import { theme } from "../theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getFromStorage, saveToStorage } from "../utils/storage";
+
+const storageKey = "TeeRan-ShoppingList";
 
 type ShoppingListItemsType = {
   id: string;
   name: string;
   completedAtTimestamp?: number;
+  lastUpdatedTimestamp: number;
 };
 
 export default function App() {
   const [shoppingList, setShoppingList] = useState<ShoppingListItemsType[]>([]);
   const [value, setValue] = useState("");
+
+  useEffect(() => {
+    const fetchInitial = async () => {
+      const data = await getFromStorage(storageKey);
+      if (data) {
+        setShoppingList(data);
+      }
+    };
+    fetchInitial();
+  }, []);
 
   const handleSubmit = () => {
     if (value) {
@@ -19,10 +33,12 @@ export default function App() {
         {
           id: new Date().toTimeString(),
           name: value,
+          lastUpdatedTimestamp: Date.now(),
         },
         ...shoppingList,
       ];
       setShoppingList(newShoppingList);
+      saveToStorage(storageKey, newShoppingList); // FIX: save the new list
       setValue("");
     }
   };
@@ -30,6 +46,7 @@ export default function App() {
   const handleDelete = (id: string) => {
     const newShoppingList = shoppingList.filter((item) => item.id !== id);
     setShoppingList(newShoppingList);
+    saveToStorage(storageKey, newShoppingList); // FIX: save the new list
     console.log("Deleted item with id:", id);
   };
 
@@ -38,6 +55,7 @@ export default function App() {
       if (item.id === id) {
         return {
           ...item,
+          lastUpdatedTimestamp: Date.now(),
           completedAtTimestamp: item.completedAtTimestamp
             ? undefined
             : Date.now(),
@@ -45,6 +63,7 @@ export default function App() {
       }
       return item;
     });
+    saveToStorage(storageKey, newShoppingList);
     setShoppingList(newShoppingList);
   };
 
@@ -58,7 +77,7 @@ export default function App() {
           <Text>Shopping list is empty</Text>
         </View>
       }
-      data={shoppingList}
+      data={orderShoppingList(shoppingList)}
       ListHeaderComponent={
         <TextInput
           placeholder="Add a new item..."
@@ -83,10 +102,33 @@ export default function App() {
   );
 }
 
+function orderShoppingList(shoppingList: ShoppingListItemsType[]) {
+  return shoppingList.sort((item1, item2) => {
+    if (item1.completedAtTimestamp && item2.completedAtTimestamp) {
+      return item2.completedAtTimestamp - item1.completedAtTimestamp;
+    }
+
+    if (item1.completedAtTimestamp && !item2.completedAtTimestamp) {
+      return 1;
+    }
+
+    if (!item1.completedAtTimestamp && item2.completedAtTimestamp) {
+      return -1;
+    }
+
+    if (!item1.completedAtTimestamp && !item2.completedAtTimestamp) {
+      return item2.lastUpdatedTimestamp - item1.lastUpdatedTimestamp;
+    }
+
+    return 0;
+  });
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingVertical: 12,
   },
   contentContainer: {
     paddingTop: 12,

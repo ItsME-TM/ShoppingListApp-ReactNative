@@ -10,6 +10,7 @@ import { ShoppingListItems } from "../components/ShoppingListItems";
 import { theme } from "../theme";
 import { useEffect, useState } from "react";
 import { getFromStorage, saveToStorage } from "../utils/storage";
+import * as Haptics from "expo-haptics";
 
 const storageKey = "TeeRan-ShoppingList";
 
@@ -56,6 +57,7 @@ export default function App() {
     const newShoppingList = shoppingList.filter((item) => item.id !== id);
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setShoppingList(newShoppingList);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     saveToStorage(storageKey, newShoppingList);
     console.log("Deleted item with id:", id);
   };
@@ -63,6 +65,11 @@ export default function App() {
   const handleToggleComplete = (id: string) => {
     const newShoppingList = shoppingList.map((item) => {
       if (item.id === id) {
+        if (item.completedAtTimestamp) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        } else {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
         return {
           ...item,
           lastUpdatedTimestamp: Date.now(),

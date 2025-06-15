@@ -1,11 +1,31 @@
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { theme } from "../../theme";
 import { registerForPushNotificationsAsync } from "../../utils/registerForPushNotificationsAsync";
+import * as Device from "expo-device";
+import * as Notification from "expo-notifications";
 
 export default function CounterScreen() {
-  const handleRequestPermission = async () => {
+  const scheduleNotification = async () => {
     const result = await registerForPushNotificationsAsync();
-    console.log("Notification permission status:", result);
+    console.log("Notification permission result:", result);
+    if (result === "granted") {
+      await Notification.scheduleNotificationAsync({
+        content: {
+          title: "Notification from you mobile",
+        },
+        trigger: {
+          type: "timeInterval",
+          seconds: 5,
+        },
+      });
+    } else {
+      if (Device.isDevice) {
+        Alert.alert(
+          "Unable to get notification permission",
+          "Please enable notifications in your device settings.",
+        );
+      }
+    }
   };
 
   return (
@@ -13,9 +33,9 @@ export default function CounterScreen() {
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.8}
-        onPress={handleRequestPermission}
+        onPress={scheduleNotification}
       >
-        <Text style={styles.buttonText}>Request Permission</Text>
+        <Text style={styles.buttonText}>Schedule Notification</Text>
       </TouchableOpacity>
     </View>
   );

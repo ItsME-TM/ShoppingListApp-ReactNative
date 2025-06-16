@@ -16,9 +16,9 @@ import { TimeSegment } from "../../components/TimeSegment";
 import { getFromStorage, saveToStorage } from "../../utils/storage";
 
 const frequency = 10 * 1000;
-const countdownStorageKey = "TeeRan-PresistedCountdownState";
+export const countdownStorageKey = "TeeRan-PresistedCountdownState";
 
-type PresistedCountdownState = {
+export type PresistedCountdownState = {
   currentNotificationId: string | undefined;
   completedAtTimestamps: number[];
 };

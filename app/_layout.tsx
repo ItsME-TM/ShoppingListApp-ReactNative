@@ -30,7 +30,7 @@ export default function Layout() {
           title: "Counter",
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Feather name="plus" size={size} color={color} />
+            <FontAwesome5 name="clock" size={size} color={color} />
           ),
         }}
       />

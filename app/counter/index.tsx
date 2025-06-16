@@ -4,10 +4,17 @@ import { registerForPushNotificationsAsync } from "../../utils/registerForPushNo
 import * as Device from "expo-device";
 import * as Notification from "expo-notifications";
 import { useEffect, useState } from "react";
-import { Duration, isBefore, intervalToDuration } from "date-fns";
+import { Duration, isBefore, intervalToDuration, set } from "date-fns";
 import { TimeSegment } from "../../components/TimeSegment";
+import { getFromStorage, saveToStorage } from "../../utils/storage";
 
-const timestamp = Date.now() + 10 * 1000;
+const frequency = 10 * 1000;
+const countdownStorageKey = "TeeRan-PresistedCountdownState";
+
+type PresistedCountdownState = {
+  currentNotificationId: string | undefined;
+  completedAtTimestamps: number[];
+};
 
 type CountdownStatus = {
   isOverdue: boolean;
@@ -15,15 +22,29 @@ type CountdownStatus = {
 };
 
 export default function CounterScreen() {
+  const [countdownState, setCountdownState] =
+    useState<PresistedCountdownState>();
   const [status, setStatus] = useState<CountdownStatus>({
     isOverdue: false,
     distance: {},
   });
 
   console.log(status);
+  const lastCompletedTimestamp = countdownState?.completedAtTimestamps[0];
+
+  useEffect(() => {
+    const init = async () => {
+      const value = await getFromStorage(countdownStorageKey);
+      setCountdownState(value);
+    };
+    init();
+  }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
+      const timestamp = lastCompletedTimestamp
+        ? lastCompletedTimestamp + frequency
+        : Date.now();
       const isOverdue = isBefore(timestamp, Date.now());
       const distance = intervalToDuration(
         isOverdue
@@ -35,19 +56,21 @@ export default function CounterScreen() {
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [lastCompletedTimestamp]);
 
   const scheduleNotification = async () => {
+    let pushNotificationId;
     const result = await registerForPushNotificationsAsync();
     console.log("Notification permission result:", result);
     if (result === "granted") {
-      await Notification.scheduleNotificationAsync({
+      pushNotificationId = await Notification.scheduleNotificationAsync({
         content: {
-          title: "Notification from you mobile",
+          title: "Notification from your mobile",
+          body: "You can now mark the thing as done!",
         },
         trigger: {
           type: "timeInterval",
-          seconds: 5,
+          seconds: frequency / 1000,
         },
       });
     } else {
@@ -58,6 +81,20 @@ export default function CounterScreen() {
         );
       }
     }
+    if (countdownState?.currentNotificationId) {
+      await Notification.cancelScheduledNotificationAsync(
+        countdownState.currentNotificationId,
+      );
+    }
+
+    const newCountdownState: PresistedCountdownState = {
+      currentNotificationId: pushNotificationId,
+      completedAtTimestamps: countdownState
+        ? [Date.now(), ...countdownState.completedAtTimestamps]
+        : [Date.now()],
+    };
+    setCountdownState(newCountdownState);
+    await saveToStorage(countdownStorageKey, newCountdownState);
   };
 
   return (

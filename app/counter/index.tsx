@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { Duration, isBefore, intervalToDuration, set } from "date-fns";
 import { TimeSegment } from "../../components/TimeSegment";
 import { getFromStorage, saveToStorage } from "../../utils/storage";
+import * as Haptics from "expo-haptics";
 
 const frequency = 10 * 1000;
 export const countdownStorageKey = "TeeRan-PresistedCountdownState";
@@ -70,6 +71,7 @@ export default function CounterScreen() {
   }, [lastCompletedTimestamp]);
 
   const scheduleNotification = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     let pushNotificationId;
     const result = await registerForPushNotificationsAsync();
     console.log("Notification permission result:", result);

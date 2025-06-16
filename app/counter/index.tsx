@@ -41,7 +41,6 @@ export default function CounterScreen() {
     distance: {},
   });
 
-  console.log(status);
   const lastCompletedTimestamp = countdownState?.completedAtTimestamps[0];
 
   useEffect(() => {

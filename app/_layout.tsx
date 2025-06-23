@@ -19,6 +19,7 @@ export default function Layout() {
         name="idea"
         options={{
           title: "Idea",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="lightbulb" size={size} color={color} />
           ),

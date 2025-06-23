@@ -32,7 +32,7 @@ type CountdownStatus = {
 };
 
 export default function CounterScreen() {
-  const confettiRef = useRef<any>();
+  const confettiRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [countdownState, setCountdownState] =
     useState<PresistedCountdownState>();

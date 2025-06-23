@@ -18,7 +18,7 @@ import { getFromStorage, saveToStorage } from "../../utils/storage";
 import * as Haptics from "expo-haptics";
 import ConfettiCannon from "react-native-confetti-cannon";
 
-const frequency = 2 * 60 * 60 * 1000;
+const frequency = 1 * 60 * 1000;
 export const countdownStorageKey = "TeeRan-PresistedCountdownState";
 
 export type PresistedCountdownState = {

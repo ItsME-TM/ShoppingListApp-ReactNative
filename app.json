@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "TodoList",
-    "slug": "TodoList",
+    "name": "Tasklet",
+    "slug": "Tasklet",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
